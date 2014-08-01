@@ -1,3 +1,4 @@
+# -*- coding: utf-8 -*-
 # tm/htmloutput.rb
 
 # Provides an API function in the TextMate namespace TextMate::HTMLOutput.show
