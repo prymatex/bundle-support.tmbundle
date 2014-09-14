@@ -60,7 +60,10 @@ __all__ = [
 
 import binascii
 import datetime
-from cStringIO import StringIO
+try:
+    from io import StringIO
+except ImportError:
+    from cStringIO import StringIO
 import re
 
 
@@ -298,7 +301,7 @@ class _InternalDict(dict):
         try:
             value = self[attr]
         except KeyError:
-            raise AttributeError, attr
+            raise AttributeError(attr)
         from warnings import warn
         warn("Attribute access from plist dicts is deprecated, use d[key] "
              "notation instead", PendingDeprecationWarning)
@@ -314,7 +317,7 @@ class _InternalDict(dict):
         try:
             del self[attr]
         except KeyError:
-            raise AttributeError, attr
+            raise AttributeError(attr)
         from warnings import warn
         warn("Attribute access from plist dicts is deprecated, use d[key] "
              "notation instead", PendingDeprecationWarning)

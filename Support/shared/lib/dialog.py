@@ -1,4 +1,7 @@
-from types import NoneType
+try:
+    from types import NoneType
+except:
+    NoneType = type(None)
 import sys
 import os
 import subprocess
