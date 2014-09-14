@@ -1,29 +1,32 @@
-#!/bin/sh
+#!/bin/bash
 
 if [[ ! -e ~/.rvm/rubies/ruby-1.8.7-p374/bin/ruby ]]; then
-	token=$("$DIALOG" -ap '{ title = "Preparing Ruby"; summary = "Please wait while ruby 1.8 is prepared for use…"; isIndeterminate = 1; }' "ProgressDialog.nib")
-	"$DIALOG" -t "$token" -p '{ progressAnimate = 1; }'
+    token=$("$DIALOG" -ap '{ title = "Preparing Ruby"; summary = "Please wait while ruby 1.8 is prepared for use…"; isIndeterminate = 1; }' "ProgressDialog.nib")
+    "$DIALOG" -t "$token" -p '{ progressAnimate = 1; }'
+    
+    export http_proxy=$PMX_HTTP_PROXY
+    export https_proxy=$PMX_HTTPS_PROXY
 
-	# Start a new error log
-	echo "Error log:" > $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log
-
-	# Install rvm
-	/usr/bin/curl -L https://get.rvm.io 2>> $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log | bash -s stable --ruby 2>> $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log
+    # Start a new error log
+    echo "Error log:" > $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log
+    
+    # Install rvm
+    /usr/bin/curl -L https://get.rvm.io 2>> $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log | bash -s stable --ruby 2>> $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log
     source ~/.rvm/scripts/rvm
     
-	# Install ruby
-	rvm install ruby-1.8.7-p374 2>> $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log
-
-	"$DIALOG" -x "$token"
-
-	if [[ ! -e ~/.rvm/rubies/ruby-1.8.7-p374/bin/ruby ]]; then
-		echo >&2 "Unable to install ruby 1.8. Please try again or contact support if issue persists."
-		cat  >&2 $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log
-		exit 1
-	fi
-
-	# Remove error log
-	unlink $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log
+    # Install ruby
+    rvm install ruby-1.8.7-p374 2>> $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log
+    
+    "$DIALOG" -x "$token"
+    
+    if [[ ! -e ~/.rvm/rubies/ruby-1.8.7-p374/bin/ruby ]]; then
+    echo >&2 "Unable to install ruby 1.8. Please try again or contact support if issue persists."
+    cat  >&2 $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log
+    exit 1
+    fi
+    
+    # Remove error log
+    unlink $PMX_LOG_PATH/Prymatex\ Ruby\ Preparation.log
 fi
 
 exec ~/.rvm/rubies/ruby-1.8.7-p374/bin/ruby "$@"

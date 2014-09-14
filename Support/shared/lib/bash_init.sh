@@ -16,10 +16,30 @@ fi
 
 export PATH
 
+# Prymatex bash_init.sh
+: ${PMX_BASH_INIT:=$PMX_HOME_PATH/Support/lib/bash_init.sh}
+if [[ -f "$PMX_BASH_INIT" ]]; then
+	. "$PMX_BASH_INIT"
+fi
+
+# TextMate bash_init.sh
 : ${TM_BASH_INIT:=$HOME/Library/Application Support/TextMate/bash_init.sh}
 if [[ -f "$TM_BASH_INIT" ]]; then
 	. "$TM_BASH_INIT"
 fi
+
+# Project bash_init.sh
+: ${PROJECT_BASH_INIT:="$TM_PROJECT_PATH/Support/lib/bash_init.sh"}
+if [[ -f "$PROJECT_BASH_INIT" ]]; then
+	. "$PROJECT_BASH_INIT"
+fi
+
+# Prymatex exports
+export DIALOG="$TM_SUPPORT_PATH/bin/pmxctl.py"
+export TMPDIR=$PMX_TMP_PATH
+export TEMP=$PMX_TMP_PATH
+export TMP=$PMX_TMP_PATH
+export LOGPATH=$PMX_LOG_PATH
 
 export RUBYLIB="${RUBYLIB:+$RUBYLIB:}$TM_SUPPORT_PATH/lib"
 
