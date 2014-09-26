@@ -2,21 +2,17 @@
 #-*- encoding: utf-8 -*-
 
 import os
-import sys, tempfile
-
-try:
-    import zmq
-except ImportError as reason:
-    raise Exception("In order to use pmxctl you must install zmq in your python path\nor if you are runining inside virtualenv please activate the global site-package with toggleglobalsitepackages")
-    #raise reason
+import sys
+import tempfile
+import json
+import socket
 
 from optparse import OptionParser, OptionGroup
 
 if 'PMX_DIALOG_ADDRESS' in os.environ:
     PMX_DIALOG_ADDRESS = os.environ['PMX_DIALOG_ADDRESS']
 else:
-    #raise Exception("PMX_DIALOG_ADDRESS is not in environ")
-    PMX_DIALOG_ADDRESS = 'ipc://tmp/pmxYhv2Je'
+    raise Exception("PMX_DIALOG_ADDRESS is not in environ")
 
 '''
 # create and show the dialog
@@ -397,12 +393,11 @@ PARSERS = {
 
 class CommandHandler(object):
     def __init__(self):
-        self.context = zmq.Context()
-        self.socket = self.context.socket(zmq.REQ)
+        self.socket = socket.socket(socket.AF_UNIX)
         self.socket.connect(PMX_DIALOG_ADDRESS)
         
     def sendCommand(self, command):
-        self.socket.send_json(command)
+        self.socket.send(json.dumps(command))
         value = self.socket.recv()
         if value:
             sys.stdout.write(value.decode("utf-8"))
