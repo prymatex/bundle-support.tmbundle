@@ -36,6 +36,7 @@ fi
 
 # Prymatex exports
 export DIALOG="$TM_SUPPORT_PATH/bin/pmxctl.py"
+export TM_MATE="$TM_SUPPORT_PATH/bin/mate"
 export TMPDIR=$PMX_TMP_PATH
 export TEMP=$PMX_TMP_PATH
 export TMP=$PMX_TMP_PATH
