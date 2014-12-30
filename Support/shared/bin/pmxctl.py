@@ -7,6 +7,7 @@ import tempfile
 import json
 import socket
 
+# TODO Cambiar a argparse
 from optparse import OptionParser, OptionGroup
 
 if 'PMX_DIALOG_ADDRESS' in os.environ:
