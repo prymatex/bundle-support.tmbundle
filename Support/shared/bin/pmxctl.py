@@ -7,6 +7,7 @@ import tempfile
 import json
 import socket
 
+import argparse
 # TODO Cambiar a argparse
 from optparse import OptionParser, OptionGroup
 
@@ -236,6 +237,8 @@ def mate_parse_args(args):
          -d, --change-dir       Change TextMates working directory to that of the file.
          -n, --no-reactivation  After edit with -w, do not re-activate the calling app.
          -h, --help             Show this information.
+         --set-mark             Set gutter marks
+         --clear-mark           Clear gutter marks
          -v, --version          Print version information.
          
         If multiple files are given, a project is created consisting of these
@@ -251,17 +254,24 @@ def mate_parse_args(args):
         create a symbolic link like this:
          ln -s %1$s %1$s_wait
     """ 
+    parser = argparse.ArgumentParser(
+        usage="%(prog)s [options] [files]",
+        description="Calling Prymatex from Other Applications"
+    )
 
-    parser = OptionParser()
-    parser.add_option("-a", "--async", action = 'store_true')
-    parser.add_option("-w", "--wait", action = 'store_true')
-    parser.add_option("-l", "--line", action = 'store')
-    parser.add_option("-r", "--recent", action = 'store_true')
-    parser.add_option("-d", "--change-dir", action = 'store_true')
-    parser.add_option("-n", "--no-reactivation", action = 'store_true')
+    parser.add_argument("-a", "--async", action='store_true')
+    parser.add_argument("-w", "--wait", action='store_true')
+    parser.add_argument("-l", "--line", action='store', type=int)
+    parser.add_argument("-r", "--recent", action='store_true')
+    parser.add_argument("-d", "--change-dir", action='store_true')
+    parser.add_argument("--set-mark", action='store')
+    parser.add_argument("--clear-mark", action='store')
+    parser.add_argument("-n", "--no-reactivation", action='store_true')
+    parser.add_argument('files', metavar='files', type=str,
+        nargs='*', help='A file/s to edit', default=[])
     
-    options, args = parser.parse_args(args)
-    return options, args
+    options = parser.parse_args(args)
+    return options, options.files
 
 # ##############################################################################
 # terminal
@@ -398,8 +408,8 @@ class CommandHandler(object):
         self.socket.connect(PMX_DIALOG_ADDRESS)
         
     def sendCommand(self, command):
-        self.socket.send(json.dumps(command))
-        value = self.socket.recv()
+        self.socket.send(json.dumps(command).encode("utf-8"))
+        value = self.socket.recv(0)
         if value:
             sys.stdout.write(value.decode("utf-8"))
         
@@ -501,8 +511,14 @@ class CommandHandler(object):
     
     def mate(self, options, args):
         kwargs = {"paths": args}
-        kwargs["line"] = options.line
-        kwargs["wait"] = options.wait
+        if options.line:
+            kwargs["line"] = options.line
+        if options.wait:
+            kwargs["wait"] = options.wait
+        if options.set_mark:
+            kwargs["set-mark"] = options.set_mark
+        if options.clear_mark:
+            kwargs["clear-mark"] = options.clear_mark
         self.sendCommand({"name": "mate", "kwargs": kwargs })
         
     def terminal(self, options, args):
