@@ -148,7 +148,7 @@ module TextMate
             io << fix_links_to_unsaved(error)
           end
 
-          io << '<div class="controls"><a href="#" onclick="copyOutput(document.getElementById(\'_executor_output\'))">copy output</a>'
+          io << '<div class="controls"><div id="copytime"></div>&nbsp;&nbsp;<a href="#" onclick="copyOutput(document.getElementById(\'_executor_output\'))">copy output</a>'
           
           options[:controls].each_key {|key| io << " | <a href=\"javascript:TextMate.system('#{options[:controls][key]}')\">#{key}</a>"}
           
@@ -288,11 +288,11 @@ HTML
   }
   
   function copyOutput(element) {
-    output = element.innerText;
+    output = element.innerText.replace(/(?:^| ) +/mg, function(match, offset, s) { return match.replace(/ /g, ' '); });
     cmd = TextMate.system('/usr/bin/pbcopy', function(){});
     cmd.write(output);
     cmd.close();
-    element.innerText = 'output copied to clipboard';
+    document.getElementById('copytime').innerText = 'output copied to clipboard';
   }
   
   </script>
@@ -363,6 +363,11 @@ HTML
     div#exception_report pre.snippet {
       margin:4pt;
       padding:4pt;
+    }
+    div#copytime {
+      font-size: 10pt;
+      float:left;
+      display:inline;
     }
   </style>
 HTML
